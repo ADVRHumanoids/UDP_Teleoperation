@@ -33,6 +33,7 @@
 
 #include <ros/ros.h>
 #include <geometry_msgs/PoseStamped.h>
+#include "rotation_matrix.h"
 
 #define BUFSIZE 2048
 
@@ -71,6 +72,7 @@ private:
 
     XBot::MatLogger::Ptr _logger;
     
+    bool readDatagram();
     
     struct sockaddr_in myaddr; /* our address */ 
     struct sockaddr_in remaddr; /* remote address */ 
@@ -81,7 +83,11 @@ private:
     QuaternionDatagram* quaternionDatagram_;
     std::unique_ptr<ParserManager> parserManager;
     std::shared_ptr<ros::NodeHandle> _nh;
-    ros::Publisher _pub;
+    ros::Publisher _pub, _publ;
+    float init_pos_rh_robot[3];
+    float init_pos_lh_robot[3];
+    float init_pos_rh_xsense[3];
+    float init_pos_lh_xsense[3];
       
     struct qKinematics{
     quaternionKinematics Pelvis_, L5_, RightHipP_, RightKneeP_, RightAnkleP_, RightToeP_, LeftHipP_, LeftKneeP_, LeftAnkleP_, LeftToeP_, RightUpperArmP_, RightForeArmP_, LeftUpperArmP_, LeftForeArmP_, RightHandP_, LeftHandP_;
@@ -114,6 +120,7 @@ private:
       return qKinematics;
     }
 
+    
 };
 
 }

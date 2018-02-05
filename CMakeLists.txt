@@ -41,6 +41,7 @@ include(MacroYCMInstallLibrary)
 
 # find required packages
 find_package(XCM REQUIRED)
+find_package(catkin REQUIRED COMPONENTS tf tf2 tf_conversions)
 
 # XENOMAI
 set(ENABLE_XENO CACHE BOOL "ON")
@@ -51,6 +52,7 @@ endif()
 # include
 include_directories(include/${PROJECT_NAME}
                     ${XCM_INCLUDE_DIRS}
+                    ${catkin_INCLUDE_DIRS}
                     )
 
 # lib
@@ -70,8 +72,11 @@ add_library(${PROJECT_NAME} SHARED
     src/timecodedatagram.cpp
     src/trackerkinematicsdatagram.cpp
     src/streamer.cpp
+    src/rotation_matrix.cpp   
 
 )
+
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 # set Xenomain flags if Xenomai is found
 if ( Xenomai_FOUND )
