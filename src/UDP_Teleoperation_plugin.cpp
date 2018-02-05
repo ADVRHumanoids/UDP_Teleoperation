@@ -171,9 +171,6 @@ void UDP_Teleoperation::control_loop(double time, double period)
      * (e.g. from ROS you can send commands with
      *         rosservice call /UDP_Teleoperation_cmd "cmd: 'MY_COMMAND_1'"
      * If any command was received, the code inside the if statement is then executed. */
-
-    return;
-    
     
     if(!current_command.str().empty()){
 
@@ -225,9 +222,9 @@ void UDP_Teleoperation::control_loop(double time, double period)
 	  //q.normalize();
 	
 	geometry_msgs::PoseStamped msg;
-	msg.pose.position.x = init_pos_rh_robot[0]+deltarh[0];
-	msg.pose.position.y = init_pos_rh_robot[1]+deltarh[1];
-	msg.pose.position.z = init_pos_rh_robot[2]+deltarh[2];
+	msg.pose.position.x = init_pos_rh_robot[0]+deltarh[0]*1.8;
+	msg.pose.position.y = init_pos_rh_robot[1]+deltarh[1]*1.8;
+	msg.pose.position.z = init_pos_rh_robot[2]+deltarh[2]*1.8;
 	  
 	msg.pose.orientation.x = rq.x();
 	msg.pose.orientation.y = rq.y();
@@ -236,9 +233,9 @@ void UDP_Teleoperation::control_loop(double time, double period)
 	
 	
 	geometry_msgs::PoseStamped msgl;
-	msgl.pose.position.x = init_pos_lh_robot[0]+deltalh[0];
-	msgl.pose.position.y = init_pos_lh_robot[1]+deltalh[1];
-	msgl.pose.position.z = init_pos_lh_robot[2]+deltalh[2];
+	msgl.pose.position.x = init_pos_lh_robot[0]+deltalh[0]*1.8;
+	msgl.pose.position.y = init_pos_lh_robot[1]+deltalh[1]*1.8;
+	msgl.pose.position.z = init_pos_lh_robot[2]+deltalh[2]*1.8;
 	  
 	msgl.pose.orientation.x = lq.x();
 	msgl.pose.orientation.y = lq.y();
