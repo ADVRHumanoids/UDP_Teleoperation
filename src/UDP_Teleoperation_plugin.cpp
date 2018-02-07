@@ -73,8 +73,8 @@ bool UDP_Teleoperation::init_control_plugin(XBot::Handle::Ptr handle)
 
     ros::init(argc, argv, "xsenseteleop");    
     _nh = std::make_shared<ros::NodeHandle>();     
-    _pub = _nh->advertise<geometry_msgs::PoseStamped>("/w_T_right_ee", 1000);
-    _publ = _nh->advertise<geometry_msgs::PoseStamped>("/w_T_left_ee", 1000);
+    _pub = _nh->advertise<geometry_msgs::PoseStamped>("/w_T_right_ee", 1);
+    _publ = _nh->advertise<geometry_msgs::PoseStamped>("/w_T_left_ee", 1);
         
     parserManager.reset(new ParserManager(false, false));
     
