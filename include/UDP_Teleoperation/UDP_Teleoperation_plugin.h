@@ -71,6 +71,8 @@ private:
     
     double _start_time;
 
+    std::shared_ptr<ros::NodeHandle> _nh;
+    ros::Publisher pubpelv, pubupparm, pubforearm, pubhand;
     Eigen::VectorXd _q0;
 
     XBot::MatLogger::Ptr _logger;

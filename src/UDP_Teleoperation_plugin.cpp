@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (C) 2017 IIT-ADVR
  * Author:
  * email:
@@ -21,6 +21,7 @@
 
 #define PORT 1153 
 #include <tf_conversions/tf_eigen.h>
+#include <geometry_msgs/Quaternion.h>
 
 /* Specify that the class XBotPlugin::UDP_Teleoperation is a XBot RT plugin with name "UDP_Teleoperation" */
 REGISTER_XBOT_PLUGIN_(XBotPlugin::UDP_Teleoperation)
@@ -60,6 +61,20 @@ bool UDP_Teleoperation::init_control_plugin(XBot::Handle::Ptr handle)
 
     /* Save robot to a private member. */
     _robot = handle->getRobotInterface();
+    
+    
+    int argc = 1;
+    const char *arg = "dummy_arg";
+    char* argg = const_cast<char*>(arg);
+    char** argv = &argg;
+
+     // ROS init
+    ros::init(argc, argv, "UDP_Teleop");    
+    _nh = std::make_shared<ros::NodeHandle>();     
+    pubpelv = _nh->advertise<geometry_msgs::Quaternion>("/quat_pelvis", 1);    
+    pubupparm = _nh->advertise<geometry_msgs::Quaternion>("/quat_upperarm", 1); 
+    pubforearm = _nh->advertise<geometry_msgs::Quaternion>("/quat_forearm", 1); 
+    pubhand = _nh->advertise<geometry_msgs::Quaternion>("/quat_hand", 1); 
 
     /* Initialize a logger which saves to the specified file. Remember that
      * the current date/time is always appended to the provided filename,
@@ -75,7 +90,7 @@ bool UDP_Teleoperation::init_control_plugin(XBot::Handle::Ptr handle)
     /* bind the socket to any valid IP address and a specific port */ 
     memset((char *)&myaddr, 0, sizeof(myaddr)); 
     myaddr.sin_family = AF_INET; 
-    myaddr.sin_addr.s_addr = inet_addr("10.255.32.109");// htonl(INADDR_ANY); 
+    myaddr.sin_addr.s_addr = inet_addr("10.255.32.103");// htonl(INADDR_ANY); 
     myaddr.sin_port = htons(PORT); 
     if (bind(fd, (struct sockaddr *)&myaddr, sizeof(myaddr)) < 0) { perror("bind failed"); return false; }
 
@@ -140,7 +155,7 @@ void UDP_Teleoperation::control_loop(double time, double period)
         float*  forearm = qKinematics_.RightForeArmP_.quatRotation;
         float*  hand = qKinematics_.RightHandP_.quatRotation;
 
-        Matrix3f handmat = QuaternionRotation(hand)*rotx(-M_PI/2);
+        Matrix3f handmat = QuaternionRotation(hand);//*rotx(-M_PI/2);
         Matrix3f forearmmat = QuaternionRotation(forearm);//*rotx(-M_PI/2);
         Matrix3f uparmmat = QuaternionRotation(uparm);//*rotx(-M_PI/2);
         Matrix3f pelvismmat = QuaternionRotation(uparm);//*rotx(-M_PI/2);
@@ -150,6 +165,27 @@ void UDP_Teleoperation::control_loop(double time, double period)
         upparmquat.set(RotationQuaternion(uparmmat));
         pelvquat.set(RotationQuaternion(pelvismmat));
        
+        geometry_msgs::Quaternion quatMsg;
+        quatMsg.w = pelvis[0];
+        quatMsg.x = pelvis[1];
+        quatMsg.y = pelvis[2];
+        quatMsg.z = pelvis[3];
+        pubpelv.publish(quatMsg);   
+        quatMsg.w = uparm[0];
+        quatMsg.x = uparm[1];
+        quatMsg.y = uparm[2];
+        quatMsg.z = uparm[3];
+        pubupparm.publish(quatMsg);   
+        quatMsg.w = forearm[0];
+        quatMsg.x = forearm[1];
+        quatMsg.y = forearm[2];
+        quatMsg.z = forearm[3];
+        pubforearm.publish(quatMsg);   
+        quatMsg.w = hand[0];
+        quatMsg.x = hand[1];
+        quatMsg.y = hand[2];
+        quatMsg.z = hand[3];
+        pubhand.publish(quatMsg);   
       }    
  
 }
