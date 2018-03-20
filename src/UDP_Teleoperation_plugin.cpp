@@ -90,7 +90,7 @@ bool UDP_Teleoperation::init_control_plugin(XBot::Handle::Ptr handle)
     /* bind the socket to any valid IP address and a specific port */ 
     memset((char *)&myaddr, 0, sizeof(myaddr)); 
     myaddr.sin_family = AF_INET; 
-    myaddr.sin_addr.s_addr = inet_addr("10.255.32.103");// htonl(INADDR_ANY); 
+    myaddr.sin_addr.s_addr = inet_addr("10.255.32.70");// htonl(INADDR_ANY); 
     myaddr.sin_port = htons(PORT); 
     if (bind(fd, (struct sockaddr *)&myaddr, sizeof(myaddr)) < 0) { perror("bind failed"); return false; }
 
@@ -158,7 +158,7 @@ void UDP_Teleoperation::control_loop(double time, double period)
         Matrix3f handmat = QuaternionRotation(hand);//*rotx(-M_PI/2);
         Matrix3f forearmmat = QuaternionRotation(forearm);//*rotx(-M_PI/2);
         Matrix3f uparmmat = QuaternionRotation(uparm);//*rotx(-M_PI/2);
-        Matrix3f pelvismmat = QuaternionRotation(uparm);//*rotx(-M_PI/2);
+        Matrix3f pelvismmat = QuaternionRotation(pelvis);//*rotx(-M_PI/2);
 
         handquat.set(RotationQuaternion(handmat));
         forearmquat.set(RotationQuaternion(forearmmat));
@@ -166,25 +166,25 @@ void UDP_Teleoperation::control_loop(double time, double period)
         pelvquat.set(RotationQuaternion(pelvismmat));
        
         geometry_msgs::Quaternion quatMsg;
-        quatMsg.w = pelvis[0];
-        quatMsg.x = pelvis[1];
-        quatMsg.y = pelvis[2];
-        quatMsg.z = pelvis[3];
+        quatMsg.w = RotationQuaternion(pelvismmat).w();
+        quatMsg.x = RotationQuaternion(pelvismmat).x();
+        quatMsg.y = RotationQuaternion(pelvismmat).y();
+        quatMsg.z = RotationQuaternion(pelvismmat).z();
         pubpelv.publish(quatMsg);   
-        quatMsg.w = uparm[0];
-        quatMsg.x = uparm[1];
-        quatMsg.y = uparm[2];
-        quatMsg.z = uparm[3];
+        quatMsg.w = RotationQuaternion(uparmmat).w();
+        quatMsg.x = RotationQuaternion(uparmmat).x();
+        quatMsg.y = RotationQuaternion(uparmmat).y();
+        quatMsg.z = RotationQuaternion(uparmmat).z();
         pubupparm.publish(quatMsg);   
-        quatMsg.w = forearm[0];
-        quatMsg.x = forearm[1];
-        quatMsg.y = forearm[2];
-        quatMsg.z = forearm[3];
+        quatMsg.w = RotationQuaternion(forearmmat).w();
+        quatMsg.x = RotationQuaternion(forearmmat).x();
+        quatMsg.y = RotationQuaternion(forearmmat).y();
+        quatMsg.z = RotationQuaternion(forearmmat).z();
         pubforearm.publish(quatMsg);   
-        quatMsg.w = hand[0];
-        quatMsg.x = hand[1];
-        quatMsg.y = hand[2];
-        quatMsg.z = hand[3];
+        quatMsg.w = RotationQuaternion(handmat).w();
+        quatMsg.x = RotationQuaternion(handmat).x();
+        quatMsg.y = RotationQuaternion(handmat).y();
+        quatMsg.z = RotationQuaternion(handmat).z();
         pubhand.publish(quatMsg);   
       }    
  
